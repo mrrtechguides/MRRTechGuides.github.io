@@ -1,7 +1,7 @@
 ---
 layout: post
 title : "Installing Ubuntu Server VM on Managed Network Using VMWare Fusion - MacOS"
-excerpt_image: "/assets/images/post/post-1.png"
+excerpt_image: "/assets/images/post/post-1.jpg"
 author : "Marvin"
 categories: development
 date: 2024-03-22 1:27:58 +0600
