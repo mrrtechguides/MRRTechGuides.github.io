@@ -1,10 +1,14 @@
 ---
+layout: post
 title : "Installing Ubuntu Server VM on Managed Network Using VMWare Fusion - MacOS"
 image : "/assets/images/post/post-1.png"
 author : "Marvin"
+categories: development
 date: 2024-03-22 1:27:58 +0600
 tags: [Virtualization, Enterprise, Virtual Machines, Linux, Proxmox]
+top: 1
 ---
+
 If you are interested in installing an Ubuntu server VM to install different software components to enhance the security of your personal network on MacOS, you can do so using VMWare Fusion. You can download VMWare Fusion from [their official download site](https://www.vmware.com/products/fusion/fusion-evaluation.html).
 
 ### Download Ubuntu Server ISO
