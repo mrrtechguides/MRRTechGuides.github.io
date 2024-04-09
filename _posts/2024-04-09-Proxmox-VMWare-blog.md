@@ -1,7 +1,7 @@
 ---
 layout: post
 title : "Enterprise Virtualization in Linux using Proxmox - Open Source"
-excerpt_image: "/assets/images/post/post-1.jpg"
+excerpt_image: "/assets/images/post/post1/post-1.jpg"
 author : "Marvin"
 categories: Development
 date: 2024-04-09
@@ -22,7 +22,7 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 
  - Select Install Proxmox VE (Graphical)
    
-   <img src="../assets/images/post/post1/post-1-1.png" width="600">
+    ![Proxmox](/assets/images/post/post1/post-1-1.png)
    
  - Review and Accept end user license agreement
  -  Select the target hard disk
