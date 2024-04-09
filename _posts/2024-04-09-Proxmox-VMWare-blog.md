@@ -70,21 +70,6 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
   ![Proxmox](/assets/images/post/post1/post-1-10.png)
    
 #### Proxmox VE Features
-| Feature                      | Description                                                                                               |
-|------------------------------|-----------------------------------------------------------------------------------------------------------|
-| Dashboard                    | Provides an overview of system resources, virtual machines (VMs), containers, storage, and network usage. |
-| Node Management              | Allows you to manage physical nodes, including adding and removing nodes from the cluster.                |
-| Virtual Machine Management   | Enables you to create, configure, start, stop, migrate, and delete virtual machines.                      |
-| Container Management         | Facilitates the creation, configuration, start, stop, and removal of Linux containers (LXC).              |
-| Storage Management           | Offers tools to manage storage resources, including adding storage repositories and managing disks.        |
-| Networking                   | Provides tools for configuring and managing network interfaces, bridges, VLANs, and firewall rules.       |
-| High Availability           | Allows you to configure high availability for virtual machines and containers.                             |
-| Backup and Restore           | Provides backup and restore functionality for VMs and containers.                                          |
-| Monitoring and Alerts        | Offers monitoring tools to track system performance and configure alerts and notifications.                |
-| User and Permission Management | Enables you to create and manage user accounts, roles, and permissions.                                     |
-| Cluster Management           | Allows you to create and manage Proxmox clusters and monitor cluster health.                                |
-| API and Integration          | Provides a RESTful API for automating tasks and integrating with third-party systems and tools.           |
-
 <table>
 <thead>
 <tr>
