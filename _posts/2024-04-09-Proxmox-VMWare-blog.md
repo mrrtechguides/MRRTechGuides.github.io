@@ -23,20 +23,20 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
  - Select Install Proxmox VE (Graphical)
    <br>
    <img src="../assets/images/post/post1/post-1-1.png" width="600">
-   <br>
+   </br>
  - Review and Accept end user license agreement
  -  Select the target hard disk
    <br>
    <img src="../assets/images/post/post1/post-1-2.png" width="600">
-   <br>
+   </br>
  - Choose location and timezone to business preference.
    <br>
    <img src="../assets/images/post/post1/post-1-3.png" width="600">
-   <br>
+   </br>
  - Setup Admin Password and Email
    <br>
    <img src="../assets/images/post/post1/post-1-4.png" width="600">
-   <br>
+   </br>
  - Modify the following configurations:
 	 - Management Interface - ex. ens33
 	-  Server hostname - ex. VEServer.Organization
@@ -45,18 +45,18 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 	- DNS Server - ex. 192.168.1.1*
    <br>
    <img src="../assets/images/post/post1/post-1-5.png" width="600">
-   <br>
+   </br>
 - Review the summary to make sure everything is correct and click on **install**.
    <br>
    <img src="../assets/images/post/post1/post-1-6.png" width="600">
-   <br>
+   </br>
   <br>
    <img src="../assets/images/post/post1/post-1-7.png" width="600">
-   <br>
+   </br>
 - After successful setup, the server will restart and you will be able to continue setup using the web interface at ```https://<IP ADDRESS OF PROXMOX>:8006/```
   <br>
    <img src="../assets/images/post/post1/post-1-8.png" width="600">
-  <br>
+  </br>
 
 #### Web Interface Setup
 - After traveling to the website, enter the admin credentials. 
@@ -64,12 +64,11 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 	b. Password is the password set during image setup
    <br>
    <img src="../assets/images/post/post1/post-1-9.png" width="600">
-   <br>
+   </br>
 -  After logging in you will be able to access all the features of Proxmox VE
-  
- <br>
+  <br>
    <img src="../assets/images/post/post1/post-1-10.png" width="600">
-   <br>
+   </br>
 #### Proxmox VE Features
 | Feature                      | Description                                                                                               |
 |------------------------------|-----------------------------------------------------------------------------------------------------------|
