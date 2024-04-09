@@ -85,4 +85,63 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 | Cluster Management           | Allows you to create and manage Proxmox clusters and monitor cluster health.                                |
 | API and Integration          | Provides a RESTful API for automating tasks and integrating with third-party systems and tools.           |
 
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dashboard</td>
+<td>Provides an overview of system resources, virtual machines (VMs), containers, storage, and network usage.</td>
+</tr>
+<tr>
+<td>Node Management</td>
+<td>Allows you to manage physical nodes, including adding and removing nodes from the cluster.</td>
+</tr>
+<tr>
+<td>Virtual Machine Management</td>
+<td>Enables you to create, configure, start, stop, migrate, and delete virtual machines.</td>
+</tr>
+<tr>
+<td>Container Management</td>
+<td>Facilitates the creation, configuration, start, stop, and removal of Linux containers (LXC).</td>
+</tr>
+<tr>
+<td>Storage Management</td>
+<td>Offers tools to manage storage resources, including adding storage repositories and managing disks.</td>
+</tr>
+<tr>
+<td>Networking</td>
+<td>Provides tools for configuring and managing network interfaces, bridges, VLANs, and firewall rules.</td>
+</tr>
+<tr>
+<td>High Availability</td>
+<td>Allows you to configure high availability for virtual machines and containers.</td>
+</tr>
+<tr>
+<td>Backup and Restore</td>
+<td>Provides backup and restore functionality for VMs and containers.</td>
+</tr>
+<tr>
+<td>Monitoring and Alerts</td>
+<td>Offers monitoring tools to track system performance and configure alerts and notifications.</td>
+</tr>
+<tr>
+<td>User and Permission Management</td>
+<td>Enables you to create and manage user accounts, roles, and permissions.</td>
+</tr>
+<tr>
+<td>Cluster Management</td>
+<td>Allows you to create and manage Proxmox clusters and monitor cluster health.</td>
+</tr>
+<tr>
+<td>API and Integration</td>
+<td>Provides a RESTful API for automating tasks and integrating with third-party systems and tools.</td>
+</tr>
+</tbody>
+</table>
+
 Proxmox is a very powerful solution that enables a low-cost and even free alternative to setting up an IT Infrastructure for your business. After this, the business can create different virtualized servers to hold different infrastructure components such as an account management server, VPN authentication server, and other virtual machines for business work.
