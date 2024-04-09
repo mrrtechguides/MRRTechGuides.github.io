@@ -21,7 +21,7 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 #### Proxmox VE  Image Setup
 
  - Select Install Proxmox VE (Graphical)	
-	  ![Proxmox](../assets/images/post/post-1-1.png)
+	  ![Proxmox](../assets/images/post/post1/post-1-1.png)
  - Review and Accept end user license agreement
  -  Select the target hard disk
  - Choose location and timezone to business preference.
