@@ -105,7 +105,7 @@ yat:
 # spacegrey: #353535
 # snowwhite: #ffffff
 #
- theme_color: coolblack
+# theme_color: coolblack
 #
 # Custom color as below:
 # theme_color: "#882250"
@@ -116,7 +116,7 @@ yat:
 # greatgold: #f2cb05
 # greenblue: #389092
 #
- brand_color: orangered
+# brand_color: orangered
 #
 # Custom color as below:
 # brand_color: "#1a8e42"
