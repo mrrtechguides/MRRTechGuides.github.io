@@ -39,10 +39,10 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
    
  - Modify the following configurations:
 	 - Management Interface - ex. ens33
-	-  Server hostname - ex. VEServer.Organization
-	- Server IP Address - ex. 192.168.1.104
-	- Gateway - ex. 192.168.1.1
-	- DNS Server - ex. 192.168.1.1*
+	 -  Server hostname - ex. VEServer.Organization
+	 - Server IP Address - ex. 192.168.1.104
+	 - Gateway - ex. 192.168.1.1
+	 - DNS Server - ex. 192.168.1.1
    
    ![Proxmox](/assets/images/post/post1/post-1-5.png)
    
