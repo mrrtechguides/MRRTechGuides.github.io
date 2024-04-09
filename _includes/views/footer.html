@@ -1,21 +1,20 @@
-<footer class="site-footer h-card">
-  <data class="u-url" href="{{ "/" | relative_url }}"></data>
-
-  <div class="wrapper">
-    <div class="site-footer-inner">
-        {%- assign currentYear = 'now' | date: "%Y" -%}
-        {%- assign copyright = site.copyright
-            | replace: '{currentYear}', currentYear
-            | replace: '{author}', site.author
-            | replace: '(c)', '&copy;'
-            | replace: '(p)', '℗'
-            | replace: '(cleft)', '<span class="copyleft">&copy;</span>'
-        -%}
-      <div>{{ copyright }}</div>
-      <div>Powered by <a title="Jekyll is a simple, blog-aware, static site
-      generator." href="https://jekyllrb.com/">Jekyll</a> &amp; <a title="Yat, yet
-      another theme." href="https://github.com/jeffreytse/jekyll-theme-yat">Yat Theme</a>.</div>
-      <div class="footer-col rss-subscribe">Subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></div>
-    </div>
-  </div>
-</footer>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.5">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    span.s1 {font-kerning: none}
+    span.s2 {text-decoration: underline ; font-kerning: none; color: #0000e9; -webkit-text-stroke: 0px #0000e9}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">{%- assign currentYear = 'now' | date: "%Y" -%} {%- assign copyright = site.copyright | replace: '{currentYear}', currentYear | replace: '{author}', site.author | replace: '(c)', '©' | replace: '(p)', 'â„—' | replace: '(cleft)', '©' -%}</span></p>
+<p class="p1"><span class="s1">{{ copyright }}</span></p>
+<p class="p1"><span class="s1">Powered by <a href="https://jekyllrb.com/"><span class="s2">Jekyll</span></a> &amp; <a href="https://github.com/jeffreytse/jekyll-theme-yat"><span class="s2">Yat Theme</span></a>.</span></p>
+</body>
+</html>
