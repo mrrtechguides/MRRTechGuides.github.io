@@ -12,9 +12,9 @@ top: 1
 ### Enterprise Virtualization
 Enterprise virtualization is essential for businesses due to its ability to optimize resource usage, reduce costs, and enhance agility. By creating virtual versions of physical hardware, such as servers and storage devices, virtualization allows for the simultaneous operation of multiple applications and workloads on a single physical server or cluster of servers. This maximizes hardware utilization, lowers hardware procurement and maintenance costs, and enables rapid scaling to meet changing business demands. Additionally, virtualization facilitates efficient disaster recovery, centralized management, improved security through isolation, and streamlined testing and development processes, making it a foundational technology for modern IT infrastructures.
   
-Enterprise virtualization solutions often entail significant investments. However, within the Linux ecosystem, businesses can find cost-effective or even free options tailored to their needs, such as [Proxmox](https://www.proxmox.com/en/). Proxmox is an open-source virtualization platform developed by Proxmox Server Solutions GmbH. It integrates Kernel-based Virtual Machine (KVM) for robust virtual machines and Linux Containers (LXC) for lightweight containerization. Offering features like centralized management, high availability, live migration, backup, and monitoring, Proxmox delivers a comprehensive solution for enterprise virtualization. Its intuitive web-based management interface simplifies deployment, administration, and monitoring of virtualized environments. As a result, Proxmox is widely adopted by organizations of varying sizes seeking efficient and budget-friendly virtualization solutions.
+Enterprise virtualization solutions often entail significant investments. However, within the Linux ecosystem, businesses can find cost-effective or even free options tailored to their needs, such as [Proxmox](https://www.proxmox.com/en/). Proxmox is an open-source virtualization platform developed by Proxmox Server Solutions GmbH. It integrates Kernel-based Virtual Machine (KVM) for robust virtual machines and Linux Containers (LXC) for lightweight containerization. Offering features like centralized management, high availability, live migration, backup, and monitoring, Proxmox delivers a comprehensive solution for enterprise virtualization. Its intuitive web-based management interface simplifies the deployment, administration, and monitoring of virtualized environments. As a result, Proxmox is widely adopted by organizations of varying sizes seeking efficient and budget-friendly virtualization solutions.
 
-In this guide we will outline the process to install this solution within a linux environment. In order to install this solution the business will need to invest in a server with specific system requirements. You can find the requirements [here](https://www.proxmox.com/en/proxmox-virtual-environment/requirements).
+In this guide, we will outline the process to install this solution within a Linux environment. To install this solution the business will need to invest in a server with specific system requirements. You can find the requirements [here](https://www.proxmox.com/en/proxmox-virtual-environment/requirements).
 
 #### Download Proxmox ISO Image
 Go to https://www.proxmox.com/en/downloads to download the iso image for the solution Proxmox VE. Mount this image to the server and in the hardware boot options select this image. During startup, the image will initialize the solution setup.
@@ -27,15 +27,15 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
  - Review and Accept end user license agreement
  -  Select the target hard disk
    
-   <img src="../assets/images/post/post1/post-1-2.png" width="600">
+   ![Proxmox](/assets/images/post/post1/post-1-2.png)
    
- - Choose location and timezone to business preference.
+ - Choose location and timezone according to business preference.
    
-   <img src="../assets/images/post/post1/post-1-3.png" width="600">
+   ![Proxmox](/assets/images/post/post1/post-1-3.png)
    
  - Setup Admin Password and Email
    
-   <img src="../assets/images/post/post1/post-1-4.png" width="600">
+   ![Proxmox](/assets/images/post/post1/post-1-4.png)
    
  - Modify the following configurations:
 	 - Management Interface - ex. ens33
@@ -44,18 +44,18 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 	- Gateway - ex. 192.168.1.1
 	- DNS Server - ex. 192.168.1.1*
    
-   <img src="../assets/images/post/post1/post-1-5.png" width="600">
+   ![Proxmox](/assets/images/post/post1/post-1-5.png)
    
 - Review the summary to make sure everything is correct and click on **install**.
    
-   <img src="../assets/images/post/post1/post-1-6.png" width="600">
+   ![Proxmox](/assets/images/post/post1/post-1-6.png)
    
   
-   <img src="../assets/images/post/post1/post-1-7.png" width="600">
+   ![Proxmox](/assets/images/post/post1/post-1-7.png)
   
 - After successful setup, the server will restart and you will be able to continue setup using the web interface at ```https://<IP ADDRESS OF PROXMOX>:8006/```
   
-  <img src="../assets/images/post/post1/post-1-8.png" width="600">
+  ![Proxmox](/assets/images/post/post1/post-1-8.png)
   
 
 #### Web Interface Setup
@@ -63,11 +63,11 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 	a . Username is root
 	b. Password is the password set during image setup
    
-  <img src="../assets/images/post/post1/post-1-9.png" width="600">
+  ![Proxmox](/assets/images/post/post1/post-1-9.png)
    
 -  After logging in you will be able to access all the features of Proxmox VE
   
-  < img src="../assets/images/post/post1/post-1-10.png" width="600">
+  ![Proxmox](/assets/images/post/post1/post-1-10.png)
    
 #### Proxmox VE Features
 | Feature                      | Description                                                                                               |
@@ -85,4 +85,4 @@ Go to https://www.proxmox.com/en/downloads to download the iso image for the sol
 | Cluster Management           | Allows you to create and manage Proxmox clusters and monitor cluster health.                                |
 | API and Integration          | Provides a RESTful API for automating tasks and integrating with third-party systems and tools.           |
 
-Proxmox is a very powerful solution which enables a low-cost and even free alternative to setting up an IT Infrastructure towards your business. After this, the business can create different virtualized servers to hold different infrastructure components such as account management server, vpn authentication server, and other virtual machines for business work.
+Proxmox is a very powerful solution that enables a low-cost and even free alternative to setting up an IT Infrastructure for your business. After this, the business can create different virtualized servers to hold different infrastructure components such as an account management server, VPN authentication server, and other virtual machines for business work.
