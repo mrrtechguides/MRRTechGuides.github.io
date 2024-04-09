@@ -20,8 +20,9 @@ In this guide we will outline the process to install this solution within a linu
 Go to https://www.proxmox.com/en/downloads to download the iso image for the solution Proxmox VE. Mount this image to the server and in the hardware boot options select this image. During startup, the image will initialize the solution setup.
 #### Proxmox VE  Image Setup
 
- - Select Install Proxmox VE (Graphical)	
-	  ![Proxmox](../assets/images/post/post1/post-1-1.png)
+ - Select Install Proxmox VE (Graphical)
+   <img src="../assets/images/post/post1/post-1-1.png" width="200"> 
+	 # ![Proxmox](../assets/images/post/post1/post-1-1.png)
  - Review and Accept end user license agreement
  -  Select the target hard disk
  - Choose location and timezone to business preference.
