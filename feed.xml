@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="/jekyll-theme-yat/feed.xml" rel="self" type="application/atom+xml" /><link href="/jekyll-theme-yat/" rel="alternate" type="text/html" /><updated>2024-04-11T20:44:18+00:00</updated><id>/jekyll-theme-yat/feed.xml</id><title type="html">MRR | Personal Blog</title><subtitle></subtitle><author><name>Marvin R</name></author><entry><title type="html">OpenLDAP and LAMPro on Ubuntu 23.10</title><link href="/jekyll-theme-yat/development/2024/04/11/openldap-lam-setup.html" rel="alternate" type="text/html" title="OpenLDAP and LAMPro on Ubuntu 23.10" /><published>2024-04-11T00:00:00+00:00</published><updated>2024-04-11T00:00:00+00:00</updated><id>/jekyll-theme-yat/development/2024/04/11/openldap-lam-setup</id><content type="html" xml:base="/jekyll-theme-yat/development/2024/04/11/openldap-lam-setup.html"><![CDATA[<p>OpenLDAP (Lightweight Directory Access Protocol) is an open-source implementation of the LDAP protocol, which is a directory service protocol used for accessing and maintaining distributed directory information services over a network. It’s commonly used for centralized authentication, authorization, and information lookup services in a networked environment. OpenLDAP provides a platform-independent, standards-based infrastructure for managing and organizing directory data.</p>
+
+<p>LAM (LDAP Account Manager), also known as LAM Pro, is a web-based LDAP administration tool specifically designed for managing LDAP directories. It provides a user-friendly interface for administrators to manage users, groups, organizational units, and other directory objects. LAM simplifies tasks such as creating, modifying, and deleting directory entries, as well as managing access control and permissions.</p>
+
+<p>Both OpenLDAP and LAM are powerful tools for managing directory services within an infrastructure for several reasons:</p>
+
+<ol>
+  <li>
+    <p><strong>Centralized Authentication and Authorization</strong>: OpenLDAP allows organizations to centralize user authentication and authorization processes. This means users can access multiple services and resources using a single set of credentials stored in the LDAP directory.</p>
+  </li>
+  <li>
+    <p><strong>Scalability</strong>: OpenLDAP is highly scalable and can handle large volumes of directory data and user requests. This makes it suitable for both small organizations and large enterprises.</p>
+  </li>
+  <li>
+    <p><strong>Standards Compliance</strong>: OpenLDAP adheres to industry standards, particularly the LDAP protocol, ensuring compatibility with a wide range of applications and systems.</p>
+  </li>
+  <li>
+    <p><strong>Web-based Management Interface</strong>: LAM provides a user-friendly web interface for managing the LDAP directory, reducing the complexity of directory administration tasks and making them accessible to non-technical users.</p>
+  </li>
+  <li>
+    <p><strong>Role-based Access Control</strong>: Both OpenLDAP and LAM support role-based access control (RBAC), allowing administrators to define granular permissions and access levels for different users and groups.</p>
+  </li>
+  <li>
+    <p><strong>Customizability</strong>: OpenLDAP and LAM are highly customizable, allowing administrators to extend their functionality and integrate them with other systems and applications as needed.</p>
+  </li>
+</ol>
+
+<h3 id="install-and-configure-slapd">Install and Configure SLAPD</h3>
+
+<ul>
+  <li>Install slapd and ldap utilities packages
+<code class="language-plaintext highlighter-rouge">sudo apt install slapd ldap-utils</code></li>
+  <li>Configure slapd with organization information
+  <code class="language-plaintext highlighter-rouge">sudo dpkg-reconfigure slapd</code>
+    <ul>
+      <li>Omit OpenLDAP server configuration?  <code class="language-plaintext highlighter-rouge">No</code></li>
+      <li>DNS Domain name: ex. <code class="language-plaintext highlighter-rouge">organization.com</code></li>
+      <li>Organization name: ex. <code class="language-plaintext highlighter-rouge">organization</code></li>
+      <li>Administrator password</li>
+      <li>Do you want the database to be removed when salpd is purged? (it’s up to your preference)</li>
+      <li>Move old database? <code class="language-plaintext highlighter-rouge">Yes</code></li>
+    </ul>
+  </li>
+  <li>Configure ldap configuration file
+<code class="language-plaintext highlighter-rouge">sudo vim /etc/ldap/ldap.conf</code>
+    <ul>
+      <li>Set Base to dc=organization,dc=com</li>
+      <li>Set URI to ldaps:/// ldapi:// ldap://</li>
+    </ul>
+  </li>
+  <li>Configure Groups module
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">sudo vim base-groups.ldif</code>
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  dn: ou=People,dc=organization,dc=com
+  objectClass: organizationalUnit
+  ou: People
+
+  dn: ou=Groups,dc=organization,dc=com
+  objectClass: organizationalUnit
+  ou: Groups
+</code></pre></div>        </div>
+      </li>
+      <li><code class="language-plaintext highlighter-rouge">sudo ldapadd -x -D cn=admin,dc=organization,dc=com -W -f base-groups.ldif</code></li>
+    </ul>
+  </li>
+  <li>Configure Password policy module
+    <ul>
+      <li>Create LDIF file for password policy module and add the content below
+<code class="language-plaintext highlighter-rouge">sudo vim load-ppolicy-mod.ldif</code>
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  dn: cn=module{0},cn=config
+  changetype: modify
+  add: olcModuleLoad
+  olcModuleLoad: ppolicy.la
+</code></pre></div>        </div>
+      </li>
+      <li>Run command to load the module to openldap
+   <code class="language-plaintext highlighter-rouge">sudo ldapadd -Y EXTERNAL -H ldapi:/// -f load-ppolicy-mod.ldif</code></li>
+      <li>Install password quality tool that can be configured to be used for password quality checking
+   <code class="language-plaintext highlighter-rouge">sudo apt-get install libpwquality-tools</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="secure-openldap-with-tlsssl">Secure OpenLDAP with TLS/SSL</h3>
+<ul>
+  <li>Create certificates according to organization needs.
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/ldapserver.key -out /etc/ssl/ldapserver.crt
+  sudo chown openldap:openldap /etc/ssl/{ldapserver.crt,ldapserver.key}
+  sudo cp /etc/ssl/ldapserver.crt /usr/local/share/ca-certificates
+  sudo cp /etc/ssl/ldapserver.crt /usr/share/ca-certificates
+</code></pre></div>    </div>
+  </li>
+  <li>Edit LDAP configuration file to use the CA Certificate
+<code class="language-plaintext highlighter-rouge">sudo vim /etc/ldap/ldap.conf</code>
+    <ul>
+      <li>Change TLS CACERT to <code class="language-plaintext highlighter-rouge">/etc/ssl/certs/ldapserver.pem</code></li>
+    </ul>
+  </li>
+  <li>In home directory create the TLS LDIF file to load to openLDAP
+    <ul>
+      <li>Create file
+  <code class="language-plaintext highlighter-rouge">vim tls.ldif</code></li>
+      <li>Add the follwing contets to the file to map to SSL certificates
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   dn: cn=config
+  changetype: modify
+  add: olcTLSCACertificateFile
+  olcTLSCACertificateFile: /etc/ssl/certs/ldapserver.pem
+  -
+  add: olcTLSCertificateFile
+  olcTLSCertificateFile: /etc/ssl/ldapserver.crt
+  -
+  add: olcTLSCertificateKeyFile
+  olcTLSCertificateKeyFile: /etc/ssl/ldapserver.key
+
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>Load SSL certificates to openLDAP
+ <code class="language-plaintext highlighter-rouge">sudo ldapadd -Y EXTERNAL -H ldapi:/// -f tls.ldif</code>
+ <code class="language-plaintext highlighter-rouge">sudo sed -i 's|/etc/ssl/certs/ca-certificates.crt|/etc/ssl/ldapserver.crt|' /etc/ldap/ldap.conf</code></li>
+  <li>Setup OpenLDAP to use LDAPS( LDAP over SSL) instead of LDAP
+  <code class="language-plaintext highlighter-rouge">sudo vim /etc/default/slapd</code>
+    <ul>
+      <li>Under SLAPD_SERVICES add LDAPS:/// and remove LDAP:///</li>
+    </ul>
+  </li>
+  <li>Restart the SLAPD Service
+  <code class="language-plaintext highlighter-rouge">sudo systemctl restart slapd</code></li>
+</ul>
+
+<h3 id="ldap-account-manager-using-nginx-lam">LDAP Account Manager using NGINX (LAM)</h3>
+<p>If using PRO Version download PRO Version from LAM Pro website, if not download free version: Website: https://www.ldap-account-manager.org/lamcms/releases</p>
+<ul>
+  <li>Make work directory to install LAM
+<code class="language-plaintext highlighter-rouge">mkdir /home/user/lam</code>
+<code class="language-plaintext highlighter-rouge">cd lam</code></li>
+  <li>Copy LAM Deb package from website over to ldap server under work directory.</li>
+  <li>Install the package
+ <code class="language-plaintext highlighter-rouge">sudo dpkg -I deb_package</code></li>
+  <li>Fix broken install to download dependencies needed for the package to install successfully
+<code class="language-plaintext highlighter-rouge">sudo apt --fix-broken install</code></li>
+  <li>Install NGINX Package
+<code class="language-plaintext highlighter-rouge">sudo apt install nginx</code></li>
+  <li>Remove apache and mark hold libraries needed for LAM to work
+    <code class="language-plaintext highlighter-rouge">
+       sudo apt-mark hold libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap liblua5.3-0
+       sudo apt purge apache2*
+       sudo rm -r /var/lib/apache2
+      sudo apt autoremove
+     </code></li>
+  <li>Setup SSL certificates for NGINX web server hosting LAM
+  <code class="language-plaintext highlighter-rouge">sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt</code></li>
+  <li>Install PHP files
+   <code class="language-plaintext highlighter-rouge">sudo apt install php8.2-common php8.2-fmp</code></li>
+  <li>Edit the nging default site to load LAM
+  <code class="language-plaintext highlighter-rouge">sudo vim/etc/nginx/sites-available/default</code>
+    <ul>
+      <li>Replace the file with the following content
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  server {
+      listen 80;
+      server_name 192.168.160.74;
+		 
+      # Redirect HTTP to HTTPS
+      return 301 https://$host$request_uri;
+  }
+  server {
+      listen 443 ssl;
+      server_name 192.168.160.71;
+		 
+      # SSL certificate configuration
+      ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+      ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+		 
+      # LAM root directory
+      root /usr/share/ldap-account-manager/;
+      index index.php index.html;
+		    
+      # PHP-FPM configuration
+      location ~ \.php$ {
+          fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+          fastcgi_param SCRIPT_FILENAME$document_root$fastcgi_script_name;
+          include fastcgi_params;
+      }
+		    
+      # Deny access to sensitive files
+      location ~ /\.ht {
+          deny all;
+      }
+  }
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>Modify permissions for lam configuration files
+  <code class="language-plaintext highlighter-rouge">sudo chown www-data:www-data /usr/share/ldap-account-manager</code></li>
+  <li>Restart NGINX
+ <code class="language-plaintext highlighter-rouge">sudo systemctl restart nginx</code></li>
+</ul>
+
+<p>Now the user should be able to visit https://server_address top login to LAM.</p>
+
+<h3 id="configure-lam-through-web">Configure LAM through WEB</h3>
+
+<ul>
+  <li>Select LAM Configuration in the top left</li>
+  <li>Click edit settings - password is lam
+    <ul>
+      <li>Add license if you have the pro version</li>
+      <li>Change the master password to be more secure</li>
+      <li>Click save and then go back to LAM Configuration page</li>
+    </ul>
+  </li>
+  <li>Click on server profiles, password is lam
+    <ul>
+      <li>Make the following changes:
+        <ul>
+          <li>Server address: <code class="language-plaintext highlighter-rouge">ldaps:///</code></li>
+          <li>Tree suffic: <code class="language-plaintext highlighter-rouge">dc=organization,dc=com</code></li>
+          <li>List of valid users: <code class="language-plaintext highlighter-rouge">cn=admin,dc=organization,dc=com</code></li>
+          <li>Change password for server profile to be more secure</li>
+          <li>Click on the second tab : Account Types and update active account type.
+            <ul>
+              <li>Groups : dc=Groups, dc=organization, dc=com</li>
+              <li>Users: dc=People, dc=organization, dc=com</li>
+            </ul>
+          </li>
+          <li>Save</li>
+        </ul>
+      </li>
+      <li>On login screen type admin credentials for LDAP Admin Account and you should be able to login and manage OpenLDAP thorugh LAM</li>
+    </ul>
+  </li>
+</ul>
+
+<p>In summary, OpenLDAP and LAM are powerful tools for managing directory services, providing centralized authentication and authorization, scalability, standards compliance, ease of administration, and flexibility to meet the needs of diverse infrastructures.</p>]]></content><author><name>Marvin R</name></author><category term="Development" /><category term="OpenLDAP" /><category term="LAM" /><category term="LAMPRO" /><category term="LDAPAccountManager" /><category term="Ubuntu" /><category term="Linux" /><category term="Account Management" /><category term="Authorization" /><category term="Accounts" /><category term="Active Directory" /><summary type="html"><![CDATA[OpenLDAP (Lightweight Directory Access Protocol) is an open-source implementation of the LDAP protocol, which is a directory service protocol used for accessing and maintaining distributed directory information services over a network. It’s commonly used for centralized authentication, authorization, and information lookup services in a networked environment. OpenLDAP provides a platform-independent, standards-based infrastructure for managing and organizing directory data.]]></summary></entry><entry><title type="html">Enterprise Virtualization in Linux using Proxmox - Open Source</title><link href="/jekyll-theme-yat/development/2024/04/09/Proxmox-VMWare-blog.html" rel="alternate" type="text/html" title="Enterprise Virtualization in Linux using Proxmox - Open Source" /><published>2024-04-09T00:00:00+00:00</published><updated>2024-04-09T00:00:00+00:00</updated><id>/jekyll-theme-yat/development/2024/04/09/Proxmox-VMWare-blog</id><content type="html" xml:base="/jekyll-theme-yat/development/2024/04/09/Proxmox-VMWare-blog.html"><![CDATA[<h3 id="enterprise-virtualization">Enterprise Virtualization</h3>
+<p>Enterprise virtualization is essential for businesses due to its ability to optimize resource usage, reduce costs, and enhance agility. By creating virtual versions of physical hardware, such as servers and storage devices, virtualization allows for the simultaneous operation of multiple applications and workloads on a single physical server or cluster of servers. This maximizes hardware utilization, lowers hardware procurement and maintenance costs, and enables rapid scaling to meet changing business demands. Additionally, virtualization facilitates efficient disaster recovery, centralized management, improved security through isolation, and streamlined testing and development processes, making it a foundational technology for modern IT infrastructures.</p>
+
+<p>Enterprise virtualization solutions often entail significant investments. However, within the Linux ecosystem, businesses can find cost-effective or even free options tailored to their needs, such as <a href="https://www.proxmox.com/en/">Proxmox</a>. Proxmox is an open-source virtualization platform developed by Proxmox Server Solutions GmbH. It integrates Kernel-based Virtual Machine (KVM) for robust virtual machines and Linux Containers (LXC) for lightweight containerization. Offering features like centralized management, high availability, live migration, backup, and monitoring, Proxmox delivers a comprehensive solution for enterprise virtualization. Its intuitive web-based management interface simplifies the deployment, administration, and monitoring of virtualized environments. As a result, Proxmox is widely adopted by organizations of varying sizes seeking efficient and budget-friendly virtualization solutions.</p>
+
+<p>In this guide, we will outline the process to install this solution within a Linux environment. To install this solution the business will need to invest in a server with specific system requirements. You can find the requirements <a href="https://www.proxmox.com/en/proxmox-virtual-environment/requirements">here</a>.</p>
+
+<h4 id="download-proxmox-iso-image">Download Proxmox ISO Image</h4>
+<p>Go to https://www.proxmox.com/en/downloads to download the iso image for the solution Proxmox VE. Mount this image to the server and in the hardware boot options select this image. During startup, the image will initialize the solution setup.</p>
+<h4 id="proxmox-ve--image-setup">Proxmox VE  Image Setup</h4>
+
+<ul>
+  <li>
+    <p>Select Install Proxmox VE (Graphical)</p>
+
+    <p><img src="/assets/images/post/post1/post-1-1.png" alt="Proxmox" /></p>
+  </li>
+  <li>Review and Accept end user license agreement</li>
+  <li>Select the target hard disk</li>
+</ul>
+
+<p><img src="/assets/images/post/post1/post-1-2.png" alt="Proxmox" /></p>
+
+<ul>
+  <li>
+    <p>Choose location and timezone according to business preference.</p>
+
+    <p><img src="/assets/images/post/post1/post-1-3.png" alt="Proxmox" /></p>
+  </li>
+  <li>
+    <p>Setup Admin Password and Email</p>
+
+    <p><img src="/assets/images/post/post1/post-1-4.png" alt="Proxmox" /></p>
+  </li>
+  <li>Modify the following configurations:
+    <ul>
+      <li>Management Interface - ex. ens33</li>
+      <li>Server hostname - ex. VEServer.Organization</li>
+      <li>Server IP Address - ex. 192.168.1.104</li>
+      <li>Gateway - ex. 192.168.1.1</li>
+      <li>DNS Server - ex. 192.168.1.1</li>
+    </ul>
+
+    <p><img src="/assets/images/post/post1/post-1-5.png" alt="Proxmox" /></p>
+  </li>
+  <li>
+    <p>Review the summary to make sure everything is correct and click on <strong>install</strong>.</p>
+
+    <p><img src="/assets/images/post/post1/post-1-6.png" alt="Proxmox" /></p>
+
+    <p><img src="/assets/images/post/post1/post-1-7.png" alt="Proxmox" /></p>
+  </li>
+  <li>
+    <p>After successful setup, the server will restart and you will be able to continue setup using the web interface at <code class="language-plaintext highlighter-rouge">https://&lt;IP ADDRESS OF PROXMOX&gt;:8006/</code></p>
+
+    <p><img src="/assets/images/post/post1/post-1-8.png" alt="Proxmox" /></p>
+  </li>
+</ul>
+
+<h4 id="web-interface-setup">Web Interface Setup</h4>
+<ul>
+  <li>
+    <p>After traveling to the website, enter the admin credentials. 
+  a . Username is root
+  b. Password is the password set during image setup</p>
+
+    <p><img src="/assets/images/post/post1/post-1-9.png" alt="Proxmox" /></p>
+  </li>
+  <li>
+    <p>After logging in you will be able to access all the features of Proxmox VE</p>
+  </li>
+</ul>
+
+<p><img src="/assets/images/post/post1/post-1-10.png" alt="Proxmox" /></p>
+
+<h4 id="proxmox-ve-features">Proxmox VE Features</h4>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dashboard</td>
+<td>Provides an overview of system resources, virtual machines (VMs), containers, storage, and network usage.</td>
+</tr>
+<tr>
+<td>Node Management</td>
+<td>Allows you to manage physical nodes, including adding and removing nodes from the cluster.</td>
+</tr>
+<tr>
+<td>Virtual Machine Management</td>
+<td>Enables you to create, configure, start, stop, migrate, and delete virtual machines.</td>
+</tr>
+<tr>
+<td>Container Management</td>
+<td>Facilitates the creation, configuration, start, stop, and removal of Linux containers (LXC).</td>
+</tr>
+<tr>
+<td>Storage Management</td>
+<td>Offers tools to manage storage resources, including adding storage repositories and managing disks.</td>
+</tr>
+<tr>
+<td>Networking</td>
+<td>Provides tools for configuring and managing network interfaces, bridges, VLANs, and firewall rules.</td>
+</tr>
+<tr>
+<td>High Availability</td>
+<td>Allows you to configure high availability for virtual machines and containers.</td>
+</tr>
+<tr>
+<td>Backup and Restore</td>
+<td>Provides backup and restore functionality for VMs and containers.</td>
+</tr>
+<tr>
+<td>Monitoring and Alerts</td>
+<td>Offers monitoring tools to track system performance and configure alerts and notifications.</td>
+</tr>
+<tr>
+<td>User and Permission Management</td>
+<td>Enables you to create and manage user accounts, roles, and permissions.</td>
+</tr>
+<tr>
+<td>Cluster Management</td>
+<td>Allows you to create and manage Proxmox clusters and monitor cluster health.</td>
+</tr>
+<tr>
+<td>API and Integration</td>
+<td>Provides a RESTful API for automating tasks and integrating with third-party systems and tools.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Proxmox is a very powerful solution that enables a low-cost and even free alternative to setting up an IT Infrastructure for your business. After this, the business can create different virtualized servers to hold different infrastructure components such as an account management server, VPN authentication server, and other virtual machines for business work.</p>]]></content><author><name>Marvin</name></author><category term="Development" /><category term="Virtualization" /><category term="Enterprise" /><category term="Virtual Machines" /><category term="Linux" /><category term="Proxmox" /><summary type="html"><![CDATA[Enterprise Virtualization Enterprise virtualization is essential for businesses due to its ability to optimize resource usage, reduce costs, and enhance agility. By creating virtual versions of physical hardware, such as servers and storage devices, virtualization allows for the simultaneous operation of multiple applications and workloads on a single physical server or cluster of servers. This maximizes hardware utilization, lowers hardware procurement and maintenance costs, and enables rapid scaling to meet changing business demands. Additionally, virtualization facilitates efficient disaster recovery, centralized management, improved security through isolation, and streamlined testing and development processes, making it a foundational technology for modern IT infrastructures.]]></summary></entry><entry><title type="html">Quick markdown example</title><link href="/jekyll-theme-yat/markdown/2017/06/10/quick-mardown-example.html" rel="alternate" type="text/html" title="Quick markdown example" /><published>2017-06-10T00:00:00+00:00</published><updated>2017-06-10T00:00:00+00:00</updated><id>/jekyll-theme-yat/markdown/2017/06/10/quick-mardown-example</id><content type="html" xml:base="/jekyll-theme-yat/markdown/2017/06/10/quick-mardown-example.html"><![CDATA[<p><img src="https://github.com/jeffreytse/jekyll-theme-yat/assets/9413601/2ed22d49-90b1-4f7e-8e8f-b77b21dee505" alt="banner" /></p>
+
+<p>Paragraphs are separated by a blank line.</p>
+
+<p>2nd paragraph. <em>Italic</em>, <strong>bold</strong>, and <code class="language-plaintext highlighter-rouge">monospace</code>. Itemized lists
+look like:</p>
+
+<ul>
+  <li>this one</li>
+  <li>that one</li>
+  <li>the other one</li>
+</ul>
+
+<p>Note that — not considering the asterisk — the actual text
+content starts at 4-columns in.</p>
+
+<blockquote>
+  <p>Block quotes are
+written like so.</p>
+
+  <p>They can span multiple paragraphs,
+if you like.</p>
+</blockquote>
+
+<p>Use 3 dashes for an em-dash. Use 2 dashes for ranges (ex., “it’s all
+in chapters 12–14”). Three dots … will be converted to an ellipsis.
+Unicode is supported. ☺</p>
+
+<h2 id="an-h2-header">An h2 header</h2>
+
+<p>Here’s a numbered list:</p>
+
+<ol>
+  <li>first item</li>
+  <li>second item</li>
+  <li>third item</li>
+</ol>
+
+<p>Note again how the actual text starts at 4 columns in (4 characters
+from the left side). Here’s a code sample:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Let me re-iterate ...
+for i in 1 .. 10 { do-something(i) }
+</code></pre></div></div>
+
+<p>As you probably guessed, indented 4 spaces. By the way, instead of
+indenting the block, you can use delimited blocks, if you like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>define foobar() {
+    print "Welcome to flavor country!";
+}
+</code></pre></div></div>
+
+<p>(which makes copying &amp; pasting easier). You can optionally mark the
+delimited block for Pandoc to syntax highlight it:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">time</span>
+<span class="c1"># Quick, count to ten!
+</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="c1"># (but not *too* quick)
+</span>    <span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="an-h3-header">An h3 header</h3>
+
+<p>Now a nested list:</p>
+
+<ol>
+  <li>
+    <p>First, get these ingredients:</p>
+
+    <ul>
+      <li>carrots</li>
+      <li>celery</li>
+      <li>lentils</li>
+    </ul>
+  </li>
+  <li>
+    <p>Boil some water.</p>
+  </li>
+  <li>
+    <p>Dump everything in the pot and follow
+this algorithm:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find wooden spoon
+uncover pot
+stir
+cover pot
+balance wooden spoon precariously on pot handle
+wait 10 minutes
+goto first step (or shut off burner when done)
+</code></pre></div>    </div>
+
+    <p>Do not bump wooden spoon or it will fall.</p>
+  </li>
+</ol>
+
+<p>Notice again how text always lines up on 4-space indents (including
+that last line which continues item 3 above).</p>
+
+<p>Here’s a link to <a href="http://foo.bar">a website</a>, to a <a href="local-doc.html">local
+doc</a>, and to a <a href="#an-h2-header">section heading in the current
+doc</a>. Here’s a footnote <sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>.</p>
+
+<p>Tables can look like this:</p>
+
+<p>Name           Size  Material      Color
+————- —–  ————  ————
+All Business      9  leather       brown
+Roundabout       10  hemp canvas   natural
+Cinderella       11  glass         transparent</p>
+
+<p>Table: Shoes sizes, materials, and colors.</p>
+
+<p>(The above is the caption for the table.) Pandoc also supports
+multi-line tables:</p>
+
+<hr />
+<p>Keyword   Text
+——–  ———————–
+red       Sunsets, apples, and
+          other red or reddish
+          things.</p>
+
+<p>green     Leaves, grass, frogs
+          and other things it’s
+          not easy being.
+——–  ———————–</p>
+
+<p>A horizontal rule follows.</p>
+
+<hr />
+
+<p>Here’s a definition list:</p>
+
+<dl>
+  <dt>apples</dt>
+  <dd>Good for making applesauce.</dd>
+  <dt>oranges</dt>
+  <dd>Citrus!</dd>
+  <dt>tomatoes</dt>
+  <dd>There’s no “e” in tomatoe.</dd>
+</dl>
+
+<p>Again, text is indented 4 spaces. (Put a blank line between each
+term and  its definition to spread things out more.)</p>
+
+<p>Here’s a “line block” (note how whitespace is honored):</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Line one</td>
+    </tr>
+    <tr>
+      <td>Line too</td>
+    </tr>
+    <tr>
+      <td>Line tree</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>and images can be specified like so:</p>
+
+<p><img src="https://user-images.githubusercontent.com/9413601/123900693-1d9ebd00-d99c-11eb-8e9e-cf7879187606.png" alt="example image" title="An exemplary image" /></p>
+
+<p>Inline math equation: $\omega = d\phi / dt$. Display
+math should get its own line like so:</p>
+
+<p>$$I = \int \rho R^{2} dV$$</p>
+
+<p>And note that you can backslash-escape any punctuation characters
+which you wish to be displayed literally, ex.: `foo`, *bar*, etc.</p>
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>Some footnote text. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>]]></content><author><name>Marvin R</name></author><category term="Markdown" /><category term="example" /><summary type="html"><![CDATA[]]></summary></entry></feed>
