@@ -1,7 +1,7 @@
 ---
 layout: post
 title: OpenLDAP and LAMPro on Ubuntu 23.10
-excerpt_image: ‘../assets’
+excerpt_image: "/assets/images/post/post2/post-2-1.png"
 categories: Development
 tags: [OpenLDAP, LAM, LAMPRO, LDAPAccountManager, Ubuntu, Linux, Account Management, Authorization, Accounts, Active Directory]
 top: 2
